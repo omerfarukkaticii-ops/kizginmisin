@@ -1,188 +1,183 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Bana Kızgın mısın?</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bana Kızgın mısın?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Fredoka+One&display=swap" rel="stylesheet">
 
-<style>
-/* MOBİLDEKİ SİYAH ÇERÇEVELERİ VE SEÇMEYİ ENGELLEME */
-* {
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            box-sizing: border-box;
+            margin: 0; padding: 0;
+        }
 
-body {
-  font-family: 'Dancing Script', cursive; /* Romantik bir font */
-  height: 100vh;
-  background: #ffffff; /* Arka plan beyaz */
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
+        body {
+            background-color: #ffffff;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'Fredoka One', cursive;
+        }
 
-/* Google Fonts'tan romantik bir font ekleyelim */
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+        /* YATAY EKRAN UYARISI */
+        @media screen and (orientation: portrait) {
+            #rotate-warning { display: flex; }
+        }
+        #rotate-warning {
+            position: fixed; inset: 0; background: white; z-index: 9999;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 20px;
+        }
 
-h1 {
-  font-size: 40px;
-  color: #ff4d6d;
-  text-align: center;
-  z-index: 100; /* Yazıların üstte kalması için */
-  position: absolute;
-  top: 20%;
-}
+        /* ÜST SABİT ALAN */
+        #top-bar {
+            position: fixed; top: 0; left: 0; width: 100%; height: 80px;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; background: transparent;
+        }
 
-/* BUTON ALANI */
-.buttons {
-  position: absolute;
-  top: 50%;
-  width: 100%;
-  height: 200px;
-  z-index: 100;
-}
+        #top-text {
+            font-size: 24px; color: #ff4d6d;
+            text-shadow: 2px 2px 0px #fff, -2px -2px 0px #fff, 2px -2px 0px #fff, -2px 2px 0px #fff, 0px 0px 5px rgba(0,0,0,0.2);
+            margin-right: 15px;
+        }
 
-button {
-  padding: 15px 30px;
-  border: none;
-  border-radius: 15px;
-  font-size: 24px;
-  font-family: 'Dancing Script', cursive;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease; /* Daha yumuşak geçişler */
-}
+        #main-doodle {
+            width: 60px; height: auto;
+            filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+        }
 
-#yes {
-  background: #ff6b6b;
-  color: white;
-  position: absolute;
-  left: 20%;
-  top: 20%;
-  z-index: 110;
-}
+        /* BUTON KONTEYNER (YATAY) */
+        #button-wrapper {
+            display: flex; width: 100vw; height: 100vh;
+        }
 
-#no {
-  background: #4caf50;
-  color: white;
-  position: absolute;
-  right: 20%;
-  top: 20%;
-  z-index: 105; /* Evet'in altında, diğer şeylerin üstünde */
-  transform-origin: center center; /* Merkezden büyüsün */
-}
+        .btn {
+            height: 100%; display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; color: white; border: none; cursor: pointer;
+            transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Pacifico', cursive;
+        }
 
-/* Doodle Karakterler */
-.doodle {
-  position: absolute;
-  width: 80px; /* Doodle boyutu */
-  height: auto;
-  pointer-events: none; /* Tıklanamaz olsun */
-  z-index: 90; /* Butonların altında */
-  animation: popIn 0.5s ease-out;
-}
+        #yes-area { background-color: #ff6b6b; width: 50%; }
+        #no-area { background-color: #4caf50; width: 50%; }
 
-@keyframes popIn {
-  from { transform: scale(0); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
+        /* ÜZGÜN DOODLE (SALLANAN) */
+        .sad-doodle {
+            position: fixed; width: 120px; z-index: 1100;
+            pointer-events: none; animation: shake 0.5s infinite;
+        }
 
-</style>
+        @keyframes shake {
+            0%, 100% { transform: rotate(-10deg) scale(1); }
+            50% { transform: rotate(10deg) scale(1.1); }
+        }
+
+        /* FİNAL EKRANI */
+        #final-screen {
+            display: none; position: fixed; inset: 0;
+            background-color: #ff0000; z-index: 2000;
+            flex-direction: column; align-items: center; justify-content: center;
+            text-align: center;
+        }
+
+        #final-text {
+            font-size: 3.5rem; color: white; padding: 20px;
+            text-shadow: 3px 3px 10px rgba(0,0,0,0.3);
+        }
+
+        .heart {
+            position: fixed; color: #fff; font-size: 40px;
+            z-index: 2100; animation: floatUp 3s linear forwards;
+            opacity: 0.8;
+        }
+
+        @keyframes floatUp {
+            from { transform: translateY(110vh) translateX(var(--side)); opacity: 1; }
+            to { transform: translateY(-20vh) translateX(var(--side)); opacity: 0; }
+        }
+    </style>
 </head>
-
 <body>
 
-<h1>Bana kızgın mısın yavrum? <br> Seni ÇOOOOOOOOOOOO SEVİYORUM ❤️</h1>
+    <div id="rotate-warning">
+        <h1>Lütfen telefonunuzu yan çevirin! 🔄</h1>
+    </div>
 
-<div class="buttons">
-  <button id="yes">Evet</button>
-  <button id="no">Hayır</button>
-</div>
+    <div id="top-bar">
+        <span id="top-text">Bana kızgın mısın yavrum?</span>
+        <img src="mutlu.png" id="main-doodle" alt="Doodle">
+    </div>
 
-<script>
-const yes = document.getElementById("yes");
-const no = document.getElementById("no");
-const body = document.body;
+    <div id="button-wrapper">
+        <button id="yes-area" class="btn">Evet</button>
+        <button id="no-area" class="btn">Hayır</button>
+    </div>
 
-let growFactor = 1;
-let yesClickCount = 0;
+    <div id="final-screen">
+        <img src="kalpli.png" style="width: 200px; animation: shake 1s infinite;" alt="Kalpli">
+        <h1 id="final-text">SENİ ÇOOOOOOKKK SEVİYORUMMM HAYATIMMM ❤️</h1>
+    </div>
 
-/* EVET KAÇMA VE HAYIR'I BÜYÜTME MEKANİZMASI */
-yes.addEventListener("touchstart", (e) => { e.preventDefault(); handleYesMove(); });
-yes.addEventListener("click", handleYesMove);
+    <script>
+        const yes = document.getElementById('yes-area');
+        const no = document.getElementById('no-area');
+        const finalScreen = document.getElementById('final-screen');
+        let step = 0; // 0, 1, 2, 3, 4, 5
 
-function handleYesMove() {
-  yesClickCount++;
-  
-  // 1. Hayır butonunu %10 büyüt
-  growFactor += 0.1;
-  no.style.transform = `scale(${growFactor})`;
+        function handleYes() {
+            if (step < 5) {
+                step++;
+                // Örüntü: 50-50, 40-60, 30-70, 20-80, 10-90, 0-100
+                let yesWidth = 50 - (step * 10);
+                let noWidth = 50 + (step * 10);
 
-  // 2. "Evet" butonunu "Hayır" butonunun dışına kaçır
-  moveYesToSafeSpot();
+                yes.style.width = yesWidth + "%";
+                no.style.width = noWidth + "%";
 
-  // 3. Ağlayan doodle (image_1.png) ekle
-  addDoodle('image_1.png'); 
-}
+                if (yesWidth === 0) {
+                    yes.style.display = "none";
+                }
 
-/* HAYIR'A BASINCA KALPLİ DOODLE ÇIKSIN */
-no.addEventListener("click", () => {
-  addDoodle('image_0.png');
-});
+                spawnSadDoodle();
+            }
+        }
 
-function moveYesToSafeSpot() {
-  // Hayır butonunun konumunu ve boyutunu al
-  const noRect = no.getBoundingClientRect();
-  
-  let newX, newY;
-  let isSafe = false;
-  
-  // Güvenli bir nokta bulana kadar dene
-  while (!isSafe) {
-    newX = Math.random() * (window.innerWidth - yes.offsetWidth);
-    newY = Math.random() * (window.innerHeight - yes.offsetHeight);
+        yes.addEventListener('click', handleYes);
+        yes.addEventListener('touchstart', (e) => { e.preventDefault(); handleYes(); });
 
-    // Yeni konum Hayır butonunun içinde mi?
-    if (
-      newX + yes.offsetWidth < noRect.left ||
-      newX > noRect.right ||
-      newY + yes.offsetHeight < noRect.top ||
-      newY > noRect.bottom
-    ) {
-      isSafe = true;
-    }
-  }
+        no.addEventListener('click', showFinal);
 
-  yes.style.left = newX + "px";
-  yes.style.top = newY + "px";
-}
+        function spawnSadDoodle() {
+            const img = document.createElement('img');
+            img.src = 'uzgun.png';
+            img.className = 'sad-doodle';
+            img.style.left = Math.random() * (window.innerWidth - 120) + "px";
+            img.style.top = Math.random() * (window.innerHeight - 120) + "px";
+            document.body.appendChild(img);
+            setTimeout(() => img.remove(), 2000);
+        }
 
-function addDoodle(imageSrc) {
-  const doodle = document.createElement("img");
-  doodle.src = imageSrc;
-  doodle.className = "doodle";
-  
-  // Rastgele bir konuma yerleştir
-  doodle.style.left = Math.random() * (window.innerWidth - 80) + "px";
-  doodle.style.top = Math.random() * (window.innerHeight - 80) + "px";
-  doodle.style.transform = `rotate(${Math.random() * 40 - 20}deg)`; // Hafifçe döndür
+        function showFinal() {
+            finalScreen.style.display = 'flex';
+            setInterval(spawnHeart, 200);
+        }
 
-  body.appendChild(doodle);
-
-  // Çok fazla doodle olmaması için eski olanları silebiliriz (isteğe bağlı)
-  // if (body.querySelectorAll('.doodle').length > 20) {
-  //   body.querySelector('.doodle').remove();
-  // }
-}
-</script>
-
+        function spawnHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            const side = Math.random() > 0.5 ? '10vw' : '85vw';
+            heart.style.setProperty('--side', side);
+            heart.style.left = side;
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 3000);
+        }
+    </script>
 </body>
 </html>
