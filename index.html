@@ -123,4 +123,86 @@
             0% { transform: translateY(110vh) translateX(0) rotate(0deg); opacity: 1; }
             25% { transform: translateY(80vh) translateX(20px) rotate(20deg); }
             50% { transform: translateY(50vh) translateX(-20px) rotate(-20deg); }
-            100% { transform: translateY(-20vh) translateX(0) rotate(360deg);
+            100% { transform: translateY(-20vh) translateX(0) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="rotate-warning">
+        <h1 style="font-family: 'Fredoka One';">Lütfen telefonu yan çevir hayatım! 🔄</h1>
+    </div>
+
+    <div id="top-bar">
+        <span id="top-text">Bana kızgın mısın yavrum?</span>
+        <img src="mutlu.png" id="main-doodle" alt="Doodle">
+    </div>
+
+    <div id="button-wrapper">
+        <button id="yes-area" class="btn">Evet</button>
+        <button id="no-area" class="btn">Hayır</button>
+    </div>
+
+    <div id="final-screen">
+        <img src="kalpli.png" id="final-doodle" alt="Kalpli">
+        <h1 id="final-text">SENI SEVIYORUMMM <br> HAYATIMMM ❤️</h1>
+    </div>
+
+    <script>
+        const yes = document.getElementById('yes-area');
+        const no = document.getElementById('no-area');
+        const finalScreen = document.getElementById('final-screen');
+        let step = 0;
+
+        function handleYes() {
+            if (step < 5) {
+                step++;
+                // 50-50'den 0-100'e giden oranlı küçülme
+                let yesWidth = 50 - (step * 10);
+                let noWidth = 50 + (step * 10);
+
+                yes.style.width = yesWidth + "%";
+                no.style.width = noWidth + "%";
+
+                if (yesWidth <= 0) {
+                    yes.style.display = "none";
+                }
+                spawnSadDoodle();
+            }
+        }
+
+        yes.addEventListener('click', handleYes);
+        yes.addEventListener('touchstart', (e) => { e.preventDefault(); handleYes(); });
+
+        no.addEventListener('click', showFinal);
+        no.addEventListener('touchstart', (e) => { e.preventDefault(); showFinal(); });
+
+        function spawnSadDoodle() {
+            const img = document.createElement('img');
+            img.src = 'uzgun.png';
+            img.className = 'sad-doodle';
+            img.style.left = Math.random() * (window.innerWidth - 130) + "px";
+            img.style.top = Math.random() * (window.innerHeight - 130) + "px";
+            document.body.appendChild(img);
+            setTimeout(() => img.remove(), 2500);
+        }
+
+        function showFinal() {
+            finalScreen.style.display = 'flex';
+            // Arka arkaya kalp yağmuru
+            setInterval(spawnHeart, 250);
+        }
+
+        function spawnHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            // Rastgele sağ veya sol taraftan çıkış
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.fontSize = (20 + Math.random() * 30) + "px";
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 4000);
+        }
+    </script>
+</body>
+</html>
