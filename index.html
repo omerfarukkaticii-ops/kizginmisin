@@ -9,8 +9,12 @@
     <style>
         * {
             -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
             box-sizing: border-box;
             margin: 0; padding: 0;
+            touch-action: none; /* Tarayıcı kaydırmasını tamamen kapatır */
         }
 
         body {
@@ -18,23 +22,26 @@
             height: 100vh; width: 100vw;
             overflow: hidden;
             font-family: 'Fredoka One', cursive;
+            position: relative;
         }
 
-        /* YATAY EKRAN UYARISI */
+        /* YATAY EKRAN UYARISI - SADECE PORTRAIT MODDA ÇIKAR */
         @media screen and (orientation: portrait) {
             #rotate-warning { display: flex !important; }
         }
         #rotate-warning {
-            position: fixed; inset: 0; background: white; z-index: 9999;
+            position: fixed; inset: 0; background: white; 
+            z-index: 9999; /* En üstte */
             display: none; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; padding: 20px;
         }
 
         /* ÜST SABİT ALAN */
         #top-bar {
-            position: fixed; top: 10px; width: 100%; height: 80px;
+            position: fixed; top: 15px; width: 100%; height: 80px;
             display: flex; align-items: center; justify-content: center;
-            z-index: 1000; pointer-events: none;
+            z-index: 500; /* Butonların üstünde ama şeffaf */
+            pointer-events: none; /* Tıklamaları butonlara geçirir */
         }
 
         #top-text {
@@ -48,13 +55,18 @@
             filter: drop-shadow(0 0 5px rgba(255,255,255,0.8));
         }
 
-        /* BUTONLAR */
-        #button-wrapper { display: flex; width: 100vw; height: 100vh; }
+        /* BUTON KONTEYNER */
+        #button-wrapper { 
+            display: flex; width: 100vw; height: 100vh; 
+            position: absolute; top: 0; left: 0; z-index: 100;
+        }
 
         .btn {
             height: 100%; display: flex; align-items: center; justify-content: center;
-            font-size: 3rem; color: white; border: none; cursor: pointer;
-            transition: width 0.4s ease-in-out; font-family: 'Pacifico', cursive;
+            font-size: 3.5rem; color: white; border: none; outline: none;
+            transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Pacifico', cursive;
+            cursor: pointer;
         }
 
         #yes-area { background-color: #ff6b6b; width: 50%; }
@@ -62,12 +74,12 @@
 
         /* SALLANAN DOODLE */
         .sad-doodle {
-            position: fixed; width: 120px; z-index: 1100;
+            position: fixed; width: 120px; z-index: 600;
             pointer-events: none; animation: intenseShake 0.5s infinite;
         }
 
         @keyframes intenseShake {
-            0%, 100% { transform: rotate(-15deg); }
+            0%, 100% { transform: rotate(-15deg) scale(1); }
             50% { transform: rotate(15deg) scale(1.1); }
         }
 
@@ -76,11 +88,13 @@
             display: none; position: fixed; inset: 0;
             background-color: #ff1a1a; z-index: 2000;
             flex-direction: column; align-items: center; justify-content: center;
+            text-align: center;
         }
 
         #final-text {
-            font-size: 3.5rem; color: white; font-family: 'Pacifico', cursive;
-            text-align: center; text-shadow: 0 0 20px rgba(255,255,255,0.5);
+            font-size: 4rem; color: white; font-family: 'Pacifico', cursive;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+            z-index: 2200;
         }
 
         .heart {
@@ -98,7 +112,7 @@
 
     <div id="rotate-warning">
         <h1>Lütfen telefonu yan çevir hayatım! 🔄</h1>
-        <p>Ekran beyazsa yan çevirmeyi dene.</p>
+        <p style="margin-top:10px;">Oynamak için ekranı yatay tutmalısın.</p>
     </div>
 
     <div id="top-bar">
@@ -112,7 +126,7 @@
     </div>
 
     <div id="final-screen">
-        <img src="kalpli.png" style="width: 200px; animation: intenseShake 1s infinite;" onerror="console.log('Kalpli resim yok')">
+        <img src="kalpli.png" style="width: 220px; animation: intenseShake 1s infinite; margin-bottom: 20px;" onerror="this.style.display='none'">
         <h1 id="final-text">SENI SEVIYORUMMM <br> HAYATIMMM ❤️</h1>
     </div>
 
@@ -122,15 +136,53 @@
         const finalScreen = document.getElementById('final-screen');
         let step = 0;
 
-        function handleYes() {
+        // TEK BİR FONKSİYON - HEM DOKUNMA HEM TIKLAMA İÇİN
+        function processYes(e) {
+            if (e) e.preventDefault();
             if (step < 5) {
                 step++;
-                yes.style.width = (50 - (step * 10)) + "%";
-                no.style.width = (50 + (step * 10)) + "%";
-                if (parseInt(yes.style.width) <= 0) yes.style.display = "none";
+                let yesWidth = 50 - (step * 10);
+                let noWidth = 50 + (step * 10);
+
+                yes.style.width = yesWidth + "%";
+                no.style.width = noWidth + "%";
+
+                if (yesWidth <= 0) {
+                    yes.style.display = "none";
+                    no.style.width = "100%";
+                }
                 spawnSadDoodle();
             }
         }
 
-        yes.addEventListener('click', handleYes);
-        yes.addEventListener('touchstart', (e) => { e.preventDefault
+        function processNo(e) {
+            if (e) e.preventDefault();
+            finalScreen.style.display = 'flex';
+            setInterval(spawnHeart, 200);
+        }
+
+        // EVENT LISTENERS - DAHA GÜÇLÜ TANIMLAMA
+        yes.addEventListener('pointerdown', processYes);
+        no.addEventListener('pointerdown', processNo);
+
+        function spawnSadDoodle() {
+            const img = document.createElement('img');
+            img.src = 'uzgun.png';
+            img.className = 'sad-doodle';
+            img.style.left = Math.random() * (window.innerWidth - 120) + "px";
+            img.style.top = Math.random() * (window.innerHeight - 120) + "px";
+            document.body.appendChild(img);
+            setTimeout(() => img.remove(), 2000);
+        }
+
+        function spawnHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + "vw";
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
