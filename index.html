@@ -18,204 +18,169 @@
 }
 
 body {
-  font-family: 'Segoe UI', Arial, sans-serif;
+  font-family: 'Dancing Script', cursive; /* Romantik bir font */
   height: 100vh;
-  background: #f3c1da;
+  background: #ffffff; /* Arka plan beyaz */
   overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* ANA BEYAZ ÇERÇEVE (KART) */
-#container {
-  background: white;
-  width: 90%; /* Daha büyük başlasın */
-  height: 60vh; /* Daha yüksek başlasın */
-  max-width: 500px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 40px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-  transition: all 0.2s ease-out; /* Büyüme animasyonu için */
-  z-index: 10;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-#card {
-  padding: 20px;
-  text-align: center;
-  width: 100%;
-}
+/* Google Fonts'tan romantik bir font ekleyelim */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
 
 h1 {
-  font-size: 26px;
-  color: #5d5d5d;
-  margin-bottom: 50px;
-  padding: 0 10px;
+  font-size: 40px;
+  color: #ff4d6d;
+  text-align: center;
+  z-index: 100; /* Yazıların üstte kalması için */
+  position: absolute;
+  top: 20%;
 }
 
 /* BUTON ALANI */
 .buttons {
-  position: relative;
-  height: 150px;
+  position: absolute;
+  top: 50%;
   width: 100%;
+  height: 200px;
+  z-index: 100;
 }
 
 button {
   padding: 15px 30px;
   border: none;
   border-radius: 15px;
-  font-size: 18px;
+  font-size: 24px;
+  font-family: 'Dancing Script', cursive;
   font-weight: bold;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.3s ease; /* Daha yumuşak geçişler */
 }
 
 #yes {
   background: #ff6b6b;
   color: white;
   position: absolute;
-  left: 50%;
-  top: 0;
-  transform: translateX(-110%);
-  z-index: 100;
+  left: 20%;
+  top: 20%;
+  z-index: 110;
 }
 
 #no {
   background: #4caf50;
   color: white;
   position: absolute;
-  left: 50%;
-  top: 0;
-  transform: translateX(10%);
-  z-index: 50;
+  right: 20%;
+  top: 20%;
+  z-index: 105; /* Evet'in altında, diğer şeylerin üstünde */
+  transform-origin: center center; /* Merkezden büyüsün */
 }
 
-/* FINAL EKRANI (MOR) */
-#final {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: #7b2cbf;
-  color: white;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  z-index: 1000;
-  overflow: hidden;
-}
-
-#final h2 {
-  font-size: 30px;
-  text-align: center;
-  margin: 20px;
-  z-index: 1100; /* Kalplerin üstünde kalsın */
-}
-
-#emoji {
-  font-size: 80px;
-  margin-bottom: 20px;
-  animation: shake 0.8s infinite;
-  z-index: 1100;
-}
-
-@keyframes shake {
-  0% { transform: rotate(-10deg) scale(1); }
-  50% { transform: rotate(10deg) scale(1.1); }
-  100% { transform: rotate(-10deg) scale(1); }
-}
-
-/* MOR KALPLER */
-.heart {
+/* Doodle Karakterler */
+.doodle {
   position: absolute;
-  color: #9d4edd; /* Mor tonlarında kalpler */
-  font-size: 30px;
-  z-index: 1050;
-  animation: floatUp 4s linear forwards;
-  opacity: 0.7;
+  width: 80px; /* Doodle boyutu */
+  height: auto;
+  pointer-events: none; /* Tıklanamaz olsun */
+  z-index: 90; /* Butonların altında */
+  animation: popIn 0.5s ease-out;
 }
 
-@keyframes floatUp {
-  from { transform: translateY(110vh) rotate(0deg); opacity: 1; }
-  to { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+@keyframes popIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
+
 </style>
 </head>
 
 <body>
 
-<div id="container">
-  <div id="card">
-    <h1>Bana kızgın mısın yavrum?</h1>
-    <div class="buttons">
-      <button id="yes">Evet</button>
-      <button id="no">Hayır</button>
-    </div>
-  </div>
-</div>
+<h1>Bana kızgın mısın yavrum? <br> Seni ÇOOOOOOOOOOOO SEVİYORUM ❤️</h1>
 
-<div id="final">
-  <div id="emoji">😍</div>
-  <h2>Seni çooooooo seviyorummm</h2>
+<div class="buttons">
+  <button id="yes">Evet</button>
+  <button id="no">Hayır</button>
 </div>
 
 <script>
 const yes = document.getElementById("yes");
 const no = document.getElementById("no");
-const container = document.getElementById("container");
-const final = document.getElementById("final");
+const body = document.body;
 
 let growFactor = 1;
+let yesClickCount = 0;
 
 /* EVET KAÇMA VE HAYIR'I BÜYÜTME MEKANİZMASI */
-// Hem dokunma hem tıklama için
 yes.addEventListener("touchstart", (e) => { e.preventDefault(); handleYesMove(); });
 yes.addEventListener("click", handleYesMove);
 
 function handleYesMove() {
-  // 1. Evet butonunu rastgele bir yere ışınla
-  const maxX = 70; // % cinsinden
-  const maxY = 100; // px cinsinden
-  yes.style.left = Math.random() * maxX + "%";
-  yes.style.top = Math.random() * maxY + "px";
-  yes.style.transform = "translateX(0)"; // Ortalamayı boz ki serbest gezsin
-
-  // 2. Hayır butonunu ve Beyaz Çerçeveyi %10 büyüt
-  growFactor += 0.15; // %15 artış daha belirgin olur
-  no.style.transform = `scale(${growFactor})`;
+  yesClickCount++;
   
-  // Beyaz container'ı büyüt
-  container.style.width = (90 + (growFactor * 10)) + "%";
-  container.style.height = (60 + (growFactor * 10)) + "vh";
+  // 1. Hayır butonunu %10 büyüt
+  growFactor += 0.1;
+  no.style.transform = `scale(${growFactor})`;
 
-  // Eğer beyaz çerçeve ekranı kaplayacak kadar büyüdüyse otomatik finale geç
-  if (growFactor >= 2.5) {
-    showFinal();
-  }
+  // 2. "Evet" butonunu "Hayır" butonunun dışına kaçır
+  moveYesToSafeSpot();
+
+  // 3. Ağlayan doodle (image_1.png) ekle
+  addDoodle('image_1.png'); 
 }
 
-/* HAYIR'A BASINCA DA DİREKT FİNAL */
-no.addEventListener("click", showFinal);
+/* HAYIR'A BASINCA KALPLİ DOODLE ÇIKSIN */
+no.addEventListener("click", () => {
+  addDoodle('image_0.png');
+});
 
-function showFinal() {
-  container.style.display = "none";
-  final.style.display = "flex";
+function moveYesToSafeSpot() {
+  // Hayır butonunun konumunu ve boyutunu al
+  const noRect = no.getBoundingClientRect();
+  
+  let newX, newY;
+  let isSafe = false;
+  
+  // Güvenli bir nokta bulana kadar dene
+  while (!isSafe) {
+    newX = Math.random() * (window.innerWidth - yes.offsetWidth);
+    newY = Math.random() * (window.innerHeight - yes.offsetHeight);
 
-  // Kalp yağmuru başlat
-  setInterval(() => {
-    const heart = document.createElement("div");
-    heart.className = "heart";
-    heart.innerHTML = "💜";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = (15 + Math.random() * 25) + "px";
-    heart.style.animationDuration = (2 + Math.random() * 3) + "s";
-    final.appendChild(heart);
+    // Yeni konum Hayır butonunun içinde mi?
+    if (
+      newX + yes.offsetWidth < noRect.left ||
+      newX > noRect.right ||
+      newY + yes.offsetHeight < noRect.top ||
+      newY > noRect.bottom
+    ) {
+      isSafe = true;
+    }
+  }
 
-    // Hafızayı yormamak için kalpleri sil
-    setTimeout(() => heart.remove(), 4000);
-  }, 150);
+  yes.style.left = newX + "px";
+  yes.style.top = newY + "px";
+}
+
+function addDoodle(imageSrc) {
+  const doodle = document.createElement("img");
+  doodle.src = imageSrc;
+  doodle.className = "doodle";
+  
+  // Rastgele bir konuma yerleştir
+  doodle.style.left = Math.random() * (window.innerWidth - 80) + "px";
+  doodle.style.top = Math.random() * (window.innerHeight - 80) + "px";
+  doodle.style.transform = `rotate(${Math.random() * 40 - 20}deg)`; // Hafifçe döndür
+
+  body.appendChild(doodle);
+
+  // Çok fazla doodle olmaması için eski olanları silebiliriz (isteğe bağlı)
+  // if (body.querySelectorAll('.doodle').length > 20) {
+  //   body.querySelector('.doodle').remove();
+  // }
 }
 </script>
 
